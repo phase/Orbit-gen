@@ -6,6 +6,6 @@ import org.gradle.api.Project;
 public class ApigenPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
-        project.tasks.create('apigen', )
+        project.tasks.create('apigen', ApigenTask)
     }
 }

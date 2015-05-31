@@ -16,20 +16,6 @@ dependencies {
     compile localGroovy()
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar, javadocJar
-}
-
 publishing {
     repositories {
         maven {
@@ -44,9 +30,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-
-            artifact sourcesJar
-            artifact javadocJar
         }
     }
 }
