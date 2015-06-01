@@ -7,6 +7,11 @@ targetCompatibility = 1.8
 group = 'org.quartzpowered'
 version = '1.0-SNAPSHOT'
 
+configurations {
+    provided
+    compile.extendsFrom(provided)
+}
+
 repositories {
     mavenCentral()
 }
@@ -14,6 +19,21 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
+
+    provided 'org.projectlombok:lombok:1.16.4'
+
+    compile 'org.ow2.asm:asm-debug-all:5.0.4'
+    compile 'com.sun.codemodel:codemodel:2.6'
+}
+
+task apiJar(type: Jar) {
+    classifier 'api'
+    from sourceSets.main.output
+    include 'org/quartzpowered/apigen/Expose.class'
+}
+
+artifacts {
+    archives apiJar
 }
 
 publishing {
@@ -30,6 +50,8 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+
+            artifact apiJar
         }
     }
 }
