@@ -167,10 +167,13 @@ class ApigenTask extends DefaultTask {
 
                         for (int i = 0; i < signatureNode.getArguments().size(); i++) {
                             SignatureNode argument = signatureNode.getArguments().get(i);
-                            LocalVariableNode localVariable = methodNode.localVariables.get(i + (isStatic ? 0 : 1));
+                            String argumentName = methodNode.localVariables.get(i + (isStatic ? 0 : 1)).name;
+                            if (argumentName.equals("this")) {
+                                argumentName = methodNode.localVariables.get(i + (isStatic ? 1 : 2)).name;
+                            }
 
                             String argumentType = toApiNamespace(argument.type);
-                            methodDef.param(directClass(argumentType), localVariable.name);
+                            methodDef.param(directClass(argumentType), argumentName);
                         }
 
                         JBlock body = methodDef.body()
@@ -228,7 +231,7 @@ class ApigenTask extends DefaultTask {
 
                     for (int i = 0; i < signatureNode.getArguments().size(); i++) {
                         SignatureNode argument = signatureNode.getArguments().get(i);
-                        LocalVariableNode localVariable = methodNode.localVariables.get(i + (isStatic ? 0 : 1));
+                        LocalVariableNode localVariable = methodNode.localVariables.get(i + (isStatic ? 0 : 1)).name;
 
                         String argumentType = toApiNamespace(argument.type);
                         methodDef.param(directClass(argumentType), localVariable.name);
