@@ -102,6 +102,7 @@ class OrbitTask extends DefaultTask {
 
         String apiAnnotation = getSignature(API.class)
 
+		//Check if class contains @API
         boolean api = false;
         for (AnnotationNode annotationNode : classNode.visibleAnnotations) {
             if (annotationNode.desc.equals(apiAnnotation)) {
@@ -111,12 +112,12 @@ class OrbitTask extends DefaultTask {
         }
 
         if (api) {
-            File orbitDir = new File(project.getBuildDir(), "orbit");
-            File orbitSource = new File(new File(new File(orbitDir, "src"), "api"), "java");
+		    //TODO I don't think this is right.
+            File orbitSource = new File(project.getRootDir(), "src/main/java/solar/dimensions/api");
             orbitSource.mkdirs();
 
             if ((classNode.access & ACC_INTERFACE) != 0) {
-
+                //TODO Do we need to do anything here? Why make an interface from an existing interface?
             } else {
                 model = new JCodeModel();
                 String selfClass = toApiNamespace(classNode.name);
@@ -144,9 +145,7 @@ class OrbitTask extends DefaultTask {
                 }
 
                 for (MethodNode methodNode : classNode.methods) {
-                    if (methodNode.name.equals("<init>")) {
-                        continue;
-                    }
+                    if (methodNode.name.equals("<init>")) continue;
 
                     boolean isPublic = (methodNode.access & ACC_PUBLIC) != 0;
                     boolean isProtected = (methodNode.access & ACC_PROTECTED) != 0;
@@ -201,8 +200,7 @@ class OrbitTask extends DefaultTask {
         }
 
         if (api) {
-            File orbitDir = new File(project.getBuildDir(), "orbit");
-            File orbitSource = new File(new File(new File(orbitDir, "src"), "api"), "java");
+            File orbitSource = new File(project.getRootDir(), "src/main/java/solar/dimensions/api");
             orbitSource.mkdirs();
 
             model = new JCodeModel();
@@ -243,6 +241,9 @@ class OrbitTask extends DefaultTask {
         }
     }
 
+	/**
+	 * Runs processClass() on every file in the directory
+	 */
     private void processDirectory(File classesDir) {
         for (File file : classesDir.listFiles()) {
             if (file.isDirectory()) {
