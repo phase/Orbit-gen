@@ -102,7 +102,7 @@ class OrbitTask extends DefaultTask {
 
         String apiAnnotation = getSignature(API.class)
 
-		//Check if class contains @API
+       	//Check if class contains @API
         boolean api = false;
         for (AnnotationNode annotationNode : classNode.visibleAnnotations) {
             if (annotationNode.desc.equals(apiAnnotation)) {
@@ -112,80 +112,77 @@ class OrbitTask extends DefaultTask {
         }
 
         if (api) {
-		    //TODO I don't think this is right.
             File orbitSource = new File(project.getRootDir(), "src/main/java/solar/dimensions/api");
             orbitSource.mkdirs();
 
-            if ((classNode.access & ACC_INTERFACE) != 0) {
-                //TODO Do we need to do anything here? Why make an interface from an existing interface?
-            } else {
-                model = new JCodeModel();
-                String selfClass = toApiNamespace(classNode.name);
-                definedClass = this.model._class(selfClass);
+            boolean isInterface = (classNode.access & ACC_INTERFACE) != 0; //TODO do something with this
+            model = new JCodeModel();
+            String selfClass = toApiNamespace(classNode.name);
+            definedClass = this.model._class(selfClass);
 
-                for (FieldNode fieldNode : classNode.fields) {
-                    boolean isPublic = (fieldNode.access & ACC_PUBLIC) != 0;
-                    boolean isProtected = (fieldNode.access & ACC_PROTECTED) != 0;
-                    boolean isStatic = (fieldNode.access & ACC_STATIC) != 0;
-                    boolean isFinal = (fieldNode.access & ACC_FINAL) != 0;
+            for (FieldNode fieldNode : classNode.fields) {
+                boolean isPublic = (fieldNode.access & ACC_PUBLIC) != 0;
+                boolean isProtected = (fieldNode.access & ACC_PROTECTED) != 0;
+                boolean isStatic = (fieldNode.access & ACC_STATIC) != 0;
+                boolean isFinal = (fieldNode.access & ACC_FINAL) != 0;
 
-                    if (isPublic || isProtected) {
-                        int mods = isPublic ? JMod.PUBLIC : JMod.PROTECTED;
-                        mods |= isStatic ? JMod.STATIC : 0;
-                        mods |= isFinal ? JMod.FINAL : 0;
+                if (isPublic || isProtected) {
+                    int mods = isPublic ? JMod.PUBLIC : JMod.PROTECTED;
+                    mods |= isStatic ? JMod.STATIC : 0;
+                    mods |= isFinal ? JMod.FINAL : 0;
 
-                        String fieldName = toApiNamespace(fieldNode.name);
-                        String fieldType = toApiNamespace(fieldNode.desc);
+                    String fieldName = toApiNamespace(fieldNode.name);
+                    String fieldType = toApiNamespace(fieldNode.desc);
 
-                        JFieldVar fieldVar = this.definedClass.field(mods, directClass(fieldType), fieldName);
-                        if (isFinal) {
-                            fieldVar.init(getDefaultValue(fieldType));
-                        }
+                    JFieldVar fieldVar = this.definedClass.field(mods, directClass(fieldType), fieldName);
+                    if (isFinal) {
+                        fieldVar.init(getDefaultValue(fieldType));
                     }
                 }
-
-                for (MethodNode methodNode : classNode.methods) {
-                    if (methodNode.name.equals("<init>")) continue;
-
-                    boolean isPublic = (methodNode.access & ACC_PUBLIC) != 0;
-                    boolean isProtected = (methodNode.access & ACC_PROTECTED) != 0;
-                    boolean isStatic = (methodNode.access & ACC_STATIC) != 0;
-
-                    if (isPublic || isProtected) {
-                        int mods = isPublic ? JMod.PUBLIC : JMod.PROTECTED;
-                        mods |= isStatic ? JMod.STATIC : 0;
-
-                        SignatureReader signatureReader = new SignatureReader(methodNode.desc)
-                        SignatureNode signatureNode = new SignatureNode();
-                        signatureReader.accept(signatureNode);
-
-                        String methodName = toApiNamespace(methodNode.name);
-                        String returnType = toApiNamespace(signatureNode.getReturnType().getType());
-
-                        JMethod methodDef = definedClass.method(mods, directClass(returnType), methodName);
-
-                        for (int i = 0; i < signatureNode.getArguments().size(); i++) {
-                            SignatureNode argument = signatureNode.getArguments().get(i);
-                            String argumentName = methodNode.localVariables.get(i + (isStatic ? 0 : 1)).name;
-                            if (argumentName.equals("this")) {
-                                argumentName = methodNode.localVariables.get(i + (isStatic ? 1 : 2)).name;
-                            }
-
-                            String argumentType = toApiNamespace(argument.type);
-                            methodDef.param(directClass(argumentType), argumentName);
-                        }
-
-                        JBlock body = methodDef.body()
-                        body.directStatement("/* API stub */");
-
-                        if (!returnType.equals("void")) {
-                            body._return(getDefaultValue(returnType));
-                        }
-                    }
-                }
-
-                this.model.build(orbitSource);
             }
+
+            for (MethodNode methodNode : classNode.methods) {
+                if (methodNode.name.equals("<init>")) continue;
+
+                boolean isPublic = (methodNode.access & ACC_PUBLIC) != 0;
+                boolean isProtected = (methodNode.access & ACC_PROTECTED) != 0;
+                boolean isStatic = (methodNode.access & ACC_STATIC) != 0;
+
+                if (isPublic || isProtected) {
+                    int mods = isPublic ? JMod.PUBLIC : JMod.PROTECTED;
+                    mods |= isStatic ? JMod.STATIC : 0;
+
+                    SignatureReader signatureReader = new SignatureReader(methodNode.desc)
+                    SignatureNode signatureNode = new SignatureNode();
+                    signatureReader.accept(signatureNode);
+
+                    String methodName = toApiNamespace(methodNode.name);
+                    String returnType = toApiNamespace(signatureNode.getReturnType().getType());
+
+                    JMethod methodDef = definedClass.method(mods, directClass(returnType), methodName);
+
+                    for (int i = 0; i < signatureNode.getArguments().size(); i++) {
+                        SignatureNode argument = signatureNode.getArguments().get(i);
+                        String argumentName = methodNode.localVariables.get(i + (isStatic ? 0 : 1)).name;
+                        if (argumentName.equals("this")) {
+                            argumentName = methodNode.localVariables.get(i + (isStatic ? 1 : 2)).name;
+                        }
+
+                        String argumentType = toApiNamespace(argument.type);
+                        methodDef.param(directClass(argumentType), argumentName);
+                    }
+
+                    JBlock body = methodDef.body()
+                    body.directStatement("/* API stub */");
+
+                    if (!returnType.equals("void")) {
+                        body._return(getDefaultValue(returnType));
+                    }
+                }
+            }
+
+            this.model.build(orbitSource);
+
             return;
         }
 
