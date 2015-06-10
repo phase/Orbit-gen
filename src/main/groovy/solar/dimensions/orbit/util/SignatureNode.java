@@ -1,4 +1,4 @@
-package org.quartzpowered.apigen.util;
+package solar.dimensions.orbit.util;
 
 import lombok.Getter;
 import org.objectweb.asm.signature.SignatureVisitor;

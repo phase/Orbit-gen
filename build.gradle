@@ -4,7 +4,7 @@ apply plugin: 'maven-publish'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = 'org.quartzpowered'
+group = 'solar.dimensions'
 version = '1.0-SNAPSHOT'
 
 configurations {
@@ -34,24 +34,4 @@ task apiJar(type: Jar) {
 
 artifacts {
     archives apiJar
-}
-
-publishing {
-    repositories {
-        maven {
-            url 'http://repo.quartzpowered.org/content/repositories/' + (project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases')
-            credentials {
-                username 'deployment'
-                password System.env['maven_pass']
-            }
-        }
-    }
-
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-            artifact apiJar
-        }
-    }
 }

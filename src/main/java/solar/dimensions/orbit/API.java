@@ -1,4 +1,4 @@
-package org.quartzpowered.apigen;
+package solar.dimensions.orbit;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -10,6 +10,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Retention(RUNTIME)
 @Target({TYPE, METHOD})
-public @interface Expose {
+public @interface API {
 
 }

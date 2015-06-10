@@ -1,4 +1,4 @@
-package org.quartzpowered.apigen.gradle
+package solar.dimensions.orbit.gradle
 
 import com.sun.codemodel.*
 import org.gradle.api.DefaultTask
@@ -7,14 +7,14 @@ import org.gradle.api.tasks.TaskAction
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.tree.*
-import org.quartzpowered.apigen.Expose
-import org.quartzpowered.apigen.util.SignatureNode
+import solar.dimensions.orbit.API
+import solar.dimensions.orbit.util.SignatureNode
 
 import static org.objectweb.asm.Opcodes.*
 
-class ApigenTask extends DefaultTask {
-    private String apiPackage = "quartz";
-    private String sourcePackage = "org.quartzpowered";
+class OrbitTask extends DefaultTask {
+    private String apiPackage = "api";
+    private String sourcePackage = "solar.dimensions";
 
     private Map<String, JType> directClassCache = new HashMap<>();
     private JCodeModel model
@@ -100,20 +100,20 @@ class ApigenTask extends DefaultTask {
         ClassNode classNode = new ClassNode();
         classReader.accept(classNode, ASM5)
 
-        String exposeAnnotation = getSignature(Expose.class)
+        String apiAnnotation = getSignature(API.class)
 
-        boolean expose = false;
+        boolean api = false;
         for (AnnotationNode annotationNode : classNode.visibleAnnotations) {
-            if (annotationNode.desc.equals(exposeAnnotation)) {
-                expose = true;
+            if (annotationNode.desc.equals(apiAnnotation)) {
+                api = true;
                 break;
             }
         }
 
-        if (expose) {
-            File apigenDir = new File(project.getBuildDir(), "apigen");
-            File apigenSource = new File(new File(new File(apigenDir, "src"), "api"), "java");
-            apigenSource.mkdirs();
+        if (api) {
+            File orbitDir = new File(project.getBuildDir(), "orbit");
+            File orbitSource = new File(new File(new File(orbitDir, "src"), "api"), "java");
+            orbitSource.mkdirs();
 
             if ((classNode.access & ACC_INTERFACE) != 0) {
 
@@ -185,41 +185,41 @@ class ApigenTask extends DefaultTask {
                     }
                 }
 
-                this.model.build(apigenSource);
+                this.model.build(orbitSource);
             }
             return;
         }
 
-        expose = false;
+        api = false;
         for (MethodNode methodNode : classNode.methods) {
             for (AnnotationNode annotationNode : methodNode.visibleAnnotations) {
-                if (annotationNode.desc.equals(exposeAnnotation)) {
-                    expose = true;
+                if (annotationNode.desc.equals(apiAnnotation)) {
+                    api = true;
                     break;
                 }
             }
         }
 
-        if (expose) {
-            File apigenDir = new File(project.getBuildDir(), "apigen");
-            File apigenSource = new File(new File(new File(apigenDir, "src"), "api"), "java");
-            apigenSource.mkdirs();
+        if (api) {
+            File orbitDir = new File(project.getBuildDir(), "orbit");
+            File orbitSource = new File(new File(new File(orbitDir, "src"), "api"), "java");
+            orbitSource.mkdirs();
 
             model = new JCodeModel();
             String selfClass = toApiNamespace(classNode.name);
             definedClass = this.model._class(selfClass, ClassType.INTERFACE);
 
             for (MethodNode methodNode : classNode.methods) {
-                expose = false;
+                api = false;
                 for (AnnotationNode annotationNode : methodNode.visibleAnnotations) {
-                    if (annotationNode.desc.equals(exposeAnnotation)) {
-                        expose = true;
+                    if (annotationNode.desc.equals(apiAnnotation)) {
+                        api = true;
                         break;
                     }
                 }
 
                 boolean isPublic = (methodNode.access & ACC_PUBLIC) != 0;
-                if (expose && isPublic) {
+                if (api && isPublic) {
                     SignatureReader signatureReader = new SignatureReader(methodNode.desc)
                     SignatureNode signatureNode = new SignatureNode();
                     signatureReader.accept(signatureNode);
@@ -239,7 +239,7 @@ class ApigenTask extends DefaultTask {
                 }
             }
 
-            this.model.build(apigenSource);
+            this.model.build(orbitSource);
         }
     }
 

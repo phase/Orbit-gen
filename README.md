@@ -1,1 +1,2 @@
-# Apigen [![Build Status](https://travis-ci.org/quartz-powered/apigen.svg)](https://travis-ci.org/quartz-powered/apigen)
+# Orbit
+This is a Gradle plugin that automatically generates an API from classes with `@API`.

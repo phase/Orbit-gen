@@ -1,15 +1,15 @@
-package org.quartzpowered.apigen.gradle;
+package solar.dimensions.orbit.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project
 import org.gradle.api.Task;
 
-public class ApigenPlugin implements Plugin<Project> {
+public class OrbitPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
-        Task apigenTask = project.tasks.create('apigen', ApigenTask)
+        Task orbitTask = project.tasks.create('orbit', ApigenTask)
 
         def compileTask = project.tasks['compileJava']
-        apigenTask.dependsOn(compileTask)
+        orbitTask.dependsOn(compileTask)
     }
 }
