@@ -238,9 +238,9 @@ class OrbitTask extends DefaultTask {
         }
     }
 
-	/**
-	 * Runs processClass() on every file in the directory
-	 */
+    /**
+     * Runs processClass() on every file in the directory
+     */
     private void processDirectory(File classesDir) {
         for (File file : classesDir.listFiles()) {
             if (file.isDirectory()) {
