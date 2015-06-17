@@ -7,7 +7,7 @@ import org.gradle.api.Task;
 public class OrbitPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
-        Task orbitTask = project.tasks.create('orbit', ApigenTask)
+        Task orbitTask = project.tasks.create('orbit', OrbitTask)
 
         def compileTask = project.tasks['compileJava']
         orbitTask.dependsOn(compileTask)
