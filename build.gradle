@@ -24,6 +24,7 @@ dependencies {
 
     compile 'org.ow2.asm:asm-debug-all:5.0.4'
     compile 'com.sun.codemodel:codemodel:2.6'
+    testCompile 'junit:junit:4.12'
 }
 
 task apiJar(type: Jar) {
