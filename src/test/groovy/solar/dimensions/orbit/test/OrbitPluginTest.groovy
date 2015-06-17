@@ -1,6 +1,7 @@
 package solar.dimensions.orbit.test;
 
 import org.junit.*
+import org.junit.rules.*
 import org.gradle.api.*
 import org.gradle.testfixtures.*
 
